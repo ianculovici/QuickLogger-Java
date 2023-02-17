@@ -34,7 +34,7 @@ QuickLogger is a simple logger class with text formatting for Java.
 
     - This will write to the standard output
 
-       `$log = new QuickLogger('', 'INFO');`
+       `log = new QuickLogger('', 'INFO');`
 
   - Usage:
  
