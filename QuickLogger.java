@@ -107,7 +107,7 @@ class QuickLogger{
             Object object = outField.get(null);
             printfMethod.invoke(object, s, (Object) o);
         } else {
-            String[] so = new String[] {String.join("", prependObj(s, o))};
+            s = s.replace("%n", "\n");
             Class<?> c = Class.forName("java.io.PrintWriter");
             Method printfMethod = c.getMethod("printf", String.class, Object[].class);
             printfMethod.invoke(output, s, (Object) o);
