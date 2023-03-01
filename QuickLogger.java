@@ -12,10 +12,10 @@ import java.time.format.DateTimeFormatter;
  * 
  * Examples:
  *  - Declaration: 
- *        log = new QuickLogger('/opt/log/application.log', 'INFO');
+ *        log = new QuickLogger("/opt/log/application.log", "INFO");
  *  - Usage:
- *        log.info('Connection details: Host: %s, User: %s. Port: %d', host, user, port);
- *        log.error('Fatal error! Exiting...');
+ *        log.info("Connection details: Host: %s, User: %s. Port: %d", host, user, port);
+ *        log.error("Fatal error! Exiting..."");
  *
  * @author ianculovici
  */
@@ -29,7 +29,7 @@ class QuickLogger{
     QuickLogger(String logfile, String level, boolean includeDate) throws IOException{
         this.LEVEL       = level;
         this.includeDate = includeDate;
-        if(logfile != ""){
+        if(logfile != null && logfile != ""){
             this.output = new PrintWriter(new FileWriter(logfile, true), true);
         }
     }
@@ -70,21 +70,24 @@ class QuickLogger{
         return -1;
     }
 
-    private String[] prependObj(String e, String... o){
-        String[] newO = new String[o.length + 1];
+    private Object[] prependObj(String e, Object... o){
+        Object[] newO = new Object[o.length + 1];
         int idx=0;
         newO[idx] = e;
-        for(String v : o){
+        for(Object v : o){
             newO[++idx] = v;
         }
         return newO;
     }
 
-    private void outputText(String s, String... o) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException{
+    private void outputText(String type, String s, Object... o) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException{
+        /*
+         * type can be 'err' or 'out'
+         */
         if(output == null){
             s = s.replace("%n", "\n");
             Class<?> sysClass = Class.forName("java.lang.System");
-            Field outField = sysClass.getDeclaredField("out");
+            Field outField = sysClass.getDeclaredField(type);
             Class<?> c = outField.getType();
             Method printfMethod = c.getDeclaredMethod("printf", String.class, Object[].class);
             Object object = outField.get(null);
@@ -97,24 +100,7 @@ class QuickLogger{
         }
     }
 
-    private void outputError(String s, String... o) throws ClassNotFoundException, NoSuchMethodException,IllegalAccessException,InvocationTargetException, NoSuchFieldException{
-        if(output == null){
-            s = s.replace("%n", "\n");
-            Class<?> sysClass = Class.forName("java.lang.System");
-            Field outField = sysClass.getDeclaredField("err");
-            Class<?> c = outField.getType();
-            Method printfMethod = c.getDeclaredMethod("printf", String.class, Object[].class);
-            Object object = outField.get(null);
-            printfMethod.invoke(object, s, (Object) o);
-        } else {
-            s = s.replace("%n", "\n");
-            Class<?> c = Class.forName("java.io.PrintWriter");
-            Method printfMethod = c.getMethod("printf", String.class, Object[].class);
-            printfMethod.invoke(output, s, (Object) o);
-        }
-    }
-
-    public void log(String messageLevel, String s, String... o) throws ClassNotFoundException, NoSuchMethodException,IllegalAccessException,InvocationTargetException,NoSuchFieldException{
+    public void log(String messageLevel, String s, Object... o) throws ClassNotFoundException, NoSuchMethodException,IllegalAccessException,InvocationTargetException,NoSuchFieldException{
         o = prependObj(messageLevel, o);
         s = "%-5s:" + s + "%n";
         if(includeDate){
@@ -127,26 +113,26 @@ class QuickLogger{
 
         if(findElement(LEVEL.toUpperCase(), logLevels) >= findElement(messageLevel.toUpperCase(), logLevels)){
             if(findElement(messageLevel.toUpperCase(), logLevels) <= findElement("ERROR", logLevels)) {
-                outputError(s, o);
+                outputText("err", s, o);
             } else {
-                outputText(s, o);
+                outputText("out", s, o);
             }
         }
     }
 
-    public void debug(String s, String ...o) throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException{
+    public void debug(String s, Object ...o) throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException{
         log("DEBUG", s, o);
     }
  
-    public void info(String s, String ...o) throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException{
+    public void info(String s, Object ...o) throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException{
         log("INFO", s, o);
     }
  
-    public void warn(String s, String ...o) throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException{
+    public void warn(String s, Object ...o) throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException{
         log("WARN", s, o);
     }
  
-    public void error(String s, String ...o) throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException{
+    public void error(String s, Object ...o) throws ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException{
         log("ERROR", s, o);
     }
 }
