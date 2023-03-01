@@ -20,7 +20,7 @@ QuickLogger is a simple logger class with text formatting for Java.
 - standard text formatting - example: https://docs.oracle.com/javase/tutorial/java/data/numberformat.html
 
 **logFilename**
-- Specifies the path and filename for where the logging will be done. If blank (''), it will log to standard & error output.
+- Specifies the path and filename for where the logging will be done. If blank (""), it will log to standard & error output.
 
 **hasDateTime**
 - If the output should show timestamp or not. Default: true
@@ -30,13 +30,13 @@ QuickLogger is a simple logger class with text formatting for Java.
   - Declaration: 
     - This will write to a file
   
-      `log = new QuickLogger('/opt/log/application.log', 'INFO');`
+      `log = new QuickLogger("/opt/log/application.log", "INFO");`
 
     - This will write to the standard output
 
-       `log = new QuickLogger('', 'INFO');`
+       `log = new QuickLogger("", "INFO");`
 
   - Usage:
  
-        log.info('Connection details: Host: %s, User: %s. Port: %d', host, user, port);
-        log.error('Fatal error! Exiting...');
+        log.info("Connection details: Host: %s, User: %s. Port: %d", host, user, port);
+        log.error("Fatal error! Exiting...");
